@@ -22,21 +22,37 @@ namespace ConsoleApp1
             return connection;
         }
 
-        public async Task getSteamInfo(string url)
+        public async Task<AppNewsGetter> getSteamInfoAsync(string url)
         {
+            AppNewsGetter news = null;
             try
             {
-                HttpResponseMessage response = await client.GetAsync(url);
+                Task<HttpResponseMessage> responseTask = client.GetAsync(url);
+
+    
+
+                HttpResponseMessage response = await responseTask; 
                 if (response.IsSuccessStatusCode)
                 {
                     string data = await response.Content.ReadAsStringAsync();
-                    Console.WriteLine(data);
+
+                    /*when deserilazing, make sure to know what data type json has
+                     * like array, obj, etc.
+                     */
+                    news = JsonConvert.DeserializeObject<AppNewsGetter>(data);
+
+   
+
                 }
             }
             catch (HttpRequestException e)
             {
                 Console.WriteLine(e.Message);
             }
+
+            return news;
         }
+
+       
     }
 }
