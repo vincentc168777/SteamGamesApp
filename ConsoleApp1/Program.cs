@@ -7,25 +7,36 @@ public class Program
 {
     static async Task Main(string[] args)
     {
-        string url = "http://api.steampowered.com/ISteamNews/GetNewsForApp/v0002/?appid=440&count=3&maxlength=300&format=json";
+        Task getAllGames = WebConnect.GetWebConnectInstance().GetGameID();
+        await getAllGames;
+        /*
+            Console.WriteLine("Get News For Your Game: ");
+            Console.WriteLine("Enter Game ID: ");
+            int userGameId = Convert.ToInt32(Console.ReadLine());
 
-        //waits for this to finish
-        Task<AppNewsGetter> FetchInfoTask = WebConnect.GetWebConnectInstance().getSteamInfoAsync(url);
+            Task startNewsFetch = GetGameNews(userGameId);
 
-        AppNewsGetter gameData = await FetchInfoTask;
-        foreach(Newsitem n in gameData.Appnews.NewsItems)
-        {
-            Console.WriteLine(n.Title);
-            Console.WriteLine(n.Contents);
-        }
+            Console.WriteLine("Fetching....");
+
+            await startNewsFetch;
+        */
         
 
+    }
 
+    public static async Task GetGameNews(int InputAppId)
+    {
+        string url = "http://api.steampowered.com/ISteamNews/GetNewsForApp/v2/?appid=" + InputAppId + "&count=6&maxlength=500&format=json";
+        Task<AppNewsGetter> FetchInfoTask = WebConnect.GetWebConnectInstance().getSteamInfoAsync(url);
 
+        AppNewsGetter gameNewsData = await FetchInfoTask;
 
-
-
-
+        foreach (Newsitem n in gameNewsData.Appnews.NewsItems)
+        {
+            Console.WriteLine("News Title: " + n.Title);
+            Console.WriteLine("Sumamry: " + n.Contents);
+            Console.WriteLine();
+        }
     }
 
     
