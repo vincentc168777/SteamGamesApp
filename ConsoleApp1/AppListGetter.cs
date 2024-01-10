@@ -8,10 +8,10 @@ using System.Threading.Tasks;
 
 namespace ConsoleApp1
 {
-    internal class AppListGetter
+    internal class AppListRoot
     {
         //this class has a getter and setter for the AppListClass
         [JsonProperty("applist")]
-        public AppList AppGetter { get; set; }
+        public AppList listGetter { get; set; }
     }
 }

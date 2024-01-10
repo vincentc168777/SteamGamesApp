@@ -13,6 +13,8 @@ namespace ConsoleApp1
         private static readonly HttpClient client = new HttpClient();
 
         private static WebConnect connection = new WebConnect();
+
+        JsonInterface json = new NewtonJson();
         private WebConnect()
         {
 
@@ -23,7 +25,7 @@ namespace ConsoleApp1
             return connection;
         }
 
-        public async Task<AppNewsGetter> getSteamInfoAsync(string url)
+        public async Task<AppNewsGetter> getSteamNewsInfoAsync(string url)
         {
             AppNewsGetter news = null;
             try
@@ -33,11 +35,11 @@ namespace ConsoleApp1
                 HttpResponseMessage response = await responseTask; 
                 if (response.IsSuccessStatusCode)
                 {
-                    string data = await response.Content.ReadAsStringAsync();
+                    string newsData = await response.Content.ReadAsStringAsync();
                     /*when deserilazing, make sure to know what data type json has
                      * like array, obj, etc.
                      */
-                    news = JsonConvert.DeserializeObject<AppNewsGetter>(data);
+                    news = json.Deserialize<AppNewsGetter>(newsData);
    
                 }
             }
@@ -50,29 +52,20 @@ namespace ConsoleApp1
         }
 
 
-        public async Task GetGameID()
+        public async Task<AppListRoot> GetSteamGameListAsync(string url)
         {
+            AppListRoot aList = null;
             try
             {
-                Task<HttpResponseMessage> gameId = client.GetAsync("https://api.steampowered.com/ISteamApps/GetAppList/v2");
+                Task<HttpResponseMessage> gameId = client.GetAsync(url);
 
                 HttpResponseMessage gameIdResponse = await gameId;
 
                 if (gameIdResponse.IsSuccessStatusCode)
                 {
                     string gameIdData = await gameIdResponse.Content.ReadAsStringAsync();
-                    //Console.WriteLine(gameIdData);
 
-                    AppListGetter aL = JsonConvert.DeserializeObject<AppListGetter>(gameIdData);
-
-                    foreach (App a in aL.AppGetter.Apps)
-                    {
-                        if (a.GameName.Contains("Dark Soul"))
-                        {
-                            Console.WriteLine(a.GameName);
-                        }
-
-                    }
+                    aList = json.Deserialize<AppListRoot>(gameIdData);
                     
                 }
             }
@@ -81,7 +74,10 @@ namespace ConsoleApp1
                 Console.WriteLine(e.Message);
 
             }
+            return aList;
         }
-       
+
+        
+
     }
 }
