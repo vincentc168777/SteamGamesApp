@@ -14,10 +14,12 @@ namespace ConsoleApp1
 
         private static WebConnect connection = new WebConnect();
 
-        JsonInterface json = new NewtonJson();
+        public List<App> allFetchedSteamGames { get; private set; }
+
+        private JsonInterface json = new NewtonJson();
         private WebConnect()
         {
-
+            
         }
 
         public static WebConnect GetWebConnectInstance()
@@ -52,12 +54,12 @@ namespace ConsoleApp1
         }
 
 
-        public async Task<AppListRoot> GetSteamGameListAsync(string url)
+        public async Task GetSteamGameListAsync()
         {
             AppListRoot aList = null;
             try
             {
-                Task<HttpResponseMessage> gameId = client.GetAsync(url);
+                Task<HttpResponseMessage> gameId = client.GetAsync("https://api.steampowered.com/ISteamApps/GetAppList/v2");
 
                 HttpResponseMessage gameIdResponse = await gameId;
 
@@ -74,7 +76,7 @@ namespace ConsoleApp1
                 Console.WriteLine(e.Message);
 
             }
-            return aList;
+            allFetchedSteamGames = aList.listGetter.Apps;
         }
 
         

@@ -1,7 +1,5 @@
-﻿using System.Net.Http;
-using System;
+﻿using System;
 using ConsoleApp1;
-using Newtonsoft.Json;
 using System.Formats.Asn1;
 using System.Reflection.Metadata.Ecma335;
 
@@ -9,6 +7,13 @@ public class SteamGameNewsProgram
 {
     public static async Task Main(string[] args)
     {
+        Console.WriteLine("App startup game fetch start.\n");
+        Task startUpGameFetch = WebConnect.GetWebConnectInstance().GetSteamGameListAsync();
+        Console.WriteLine("App startup game fetch running. Please wait...");
+        
+        await startUpGameFetch;
+
+        Console.WriteLine("Fetch completed!\n");
 
         await askUser();
 
@@ -27,19 +32,17 @@ public class SteamGameNewsProgram
 
             while (string.IsNullOrEmpty(userGame))
             {
-                Console.WriteLine("Please re-type name.");
+                Console.WriteLine("Please re-type name.\n");
                 Console.WriteLine("Enter Game Name: ");
 
                 userGame = Console.ReadLine();
             }
 
-            Console.WriteLine("Input accepted, starting fetch...");
-            Task<List<App>> startFetchTask = GetGamesWithName(userGame);
+            Console.WriteLine("Input accepted, starting search...\n");
 
-            List<App> resultGameList = await startFetchTask;
+            List<App> resultGameList = GetGamesWithName(userGame);
 
             Console.WriteLine("Finished fetch! Here are your games:");
-            Console.WriteLine();
 
             foreach (App app in resultGameList)
             {
@@ -68,29 +71,17 @@ public class SteamGameNewsProgram
         }
     }
 
-    private static async Task<List<App>> GetGames()
+    private List<App> GetGames()
     {
-        string url = "https://api.steampowered.com/ISteamApps/GetAppList/v2";
-
-        Task<AppListRoot> getGameTask = WebConnect.GetWebConnectInstance().GetSteamGameListAsync(url);
-
-        AppListRoot appListRoot = await getGameTask;
-
-        return appListRoot.listGetter.Apps;
-
+        return WebConnect.GetWebConnectInstance().allFetchedSteamGames;
     }
 
-    private static async Task<List<App>> GetGamesWithName(string gameName)
+    private static List<App> GetGamesWithName(string gameName)
     {
         List<App> gamesWithName = new List<App>();
-        //gets all games first
-        Task<List<App>> getAllGames = GetGames();
+        
 
-        Console.WriteLine("Fetching steam games...");
-
-        List<App> gamelist = await getAllGames;
-
-        foreach (App app in gamelist)
+        foreach (App app in WebConnect.GetWebConnectInstance().allFetchedSteamGames)
         {
             bool hasName = doesContain(app.GameName, gameName);
             if (hasName)
