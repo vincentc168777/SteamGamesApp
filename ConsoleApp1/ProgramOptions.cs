@@ -17,14 +17,14 @@ namespace ConsoleApp1
         }
         public async Task newsOption()
         {
-            Console.WriteLine("What game do you want news for?: ");
+            Console.WriteLine("What game do you want news for? Enter full name: ");
 
             string gameNewsinput = Console.ReadLine();
 
             while (string.IsNullOrEmpty(gameNewsinput))
             {
                 Console.WriteLine("Please re-type.");
-                Console.WriteLine("What game do you want news for?: ");
+                Console.WriteLine("What game do you want news for? Enter full name: ");
 
                 gameNewsinput = Console.ReadLine();
             }
