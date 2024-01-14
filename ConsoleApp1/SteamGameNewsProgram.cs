@@ -23,31 +23,26 @@ public class SteamGameNewsProgram
     {
         bool keepRunning = true;
 
-        Console.WriteLine("Get news for your favorite game!");
+        Console.WriteLine("Welcome to steam gamme app!");
         while (keepRunning)
         {
-            Console.WriteLine("Enter game name: ");
+            Console.WriteLine("Do you want news for a game or just a game list? Type 'news' or 'games': ");
 
-            string userGame = Console.ReadLine();
+            string input = Console.ReadLine();
 
-            while (string.IsNullOrEmpty(userGame))
+            while (string.IsNullOrEmpty(input))
             {
-                Console.WriteLine("Please re-type name.\n");
-                Console.WriteLine("Enter Game Name: ");
+                Console.WriteLine("Please re-type request.\n");
+                Console.WriteLine("Type 'news' or 'games': ");
 
-                userGame = Console.ReadLine();
+                input = Console.ReadLine();
             }
 
-            Console.WriteLine("Input accepted, starting search...\n");
+            Console.WriteLine("Input accepted!\n");
 
-            List<App> resultGameList = GetGamesWithName(userGame);
+            Task gameOrNewsTask = gamesOrNews(input);
+            await gameOrNewsTask;
 
-            Console.WriteLine("Finished fetch! Here are your games:");
-
-            foreach (App app in resultGameList)
-            {
-                Console.WriteLine(app.GameName);
-            }
 
             keepRunning = continueRunning();
         }
@@ -55,47 +50,18 @@ public class SteamGameNewsProgram
 
     }
 
-    private static async Task GetGameNews(int InputAppId)
+    private static async Task gamesOrNews(string userIn)
     {
-        string url = "http://api.steampowered.com/ISteamNews/GetNewsForApp/v2/?appid=" + InputAppId + "&count=6&maxlength=500&format=json";
-
-        Task<AppNewsGetter> FetchInfoTask = WebConnect.GetWebConnectInstance().getSteamNewsInfoAsync(url);
-
-        AppNewsGetter gameNewsData = await FetchInfoTask;
-
-        foreach (Newsitem n in gameNewsData.Appnews.NewsItems)
+        if (userIn.ToLower().Equals("games"))
         {
-            Console.WriteLine("News Title: " + n.Title);
-            Console.WriteLine("Sumamry: " + n.Contents);
-            Console.WriteLine();
+            ProgramOptions.ProgramOptionsInstance().gamesOption();
+
         }
-    }
-
-    private List<App> GetGames()
-    {
-        return WebConnect.GetWebConnectInstance().allFetchedSteamGames;
-    }
-
-    private static List<App> GetGamesWithName(string gameName)
-    {
-        List<App> gamesWithName = new List<App>();
-        
-
-        foreach (App app in WebConnect.GetWebConnectInstance().allFetchedSteamGames)
+        else if (userIn.ToLower().Equals("news"))
         {
-            bool hasName = doesContain(app.GameName, gameName);
-            if (hasName)
-            {
-                gamesWithName.Add(app);
-            }
+            Task newsTask = ProgramOptions.ProgramOptionsInstance().newsOption();
+            await newsTask;
         }
-
-        return gamesWithName;
-    }
-
-    private static bool doesContain(string source, string hasThis)
-    {
-        return source.IndexOf(hasThis, StringComparison.OrdinalIgnoreCase) >= 0;
     }
 
     private static bool continueRunning()
@@ -120,11 +86,11 @@ public class SteamGameNewsProgram
         {
             keepRunning = false;
         }
- 
+
         return keepRunning;
     }
-    
-    
 
-    
+
+
+
 }
