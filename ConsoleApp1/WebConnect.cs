@@ -27,9 +27,9 @@ namespace ConsoleApp1
             return connection;
         }
 
-        public async Task<AppNewsGetter> getSteamNewsInfoAsync(string url)
+        public async Task<AppNewsRoot> getSteamNewsInfoAsync(string url)
         {
-            AppNewsGetter news = null;
+            AppNewsRoot news = null;
             try
             {
                 Task<HttpResponseMessage> responseTask = client.GetAsync(url);
@@ -41,8 +41,14 @@ namespace ConsoleApp1
                     /*when deserilazing, make sure to know what data type json has
                      * like array, obj, etc.
                      */
-                    news = json.Deserialize<AppNewsGetter>(newsData);
-   
+                    news = json.Deserialize<AppNewsRoot>(newsData);
+
+                    //if a game found but has no news at all
+                    if (news.Appnews.Count == 0)
+                    {
+                        Console.WriteLine("No news found for your game!\n");
+                    }
+
                 }
             }
             catch (HttpRequestException e)
@@ -68,13 +74,21 @@ namespace ConsoleApp1
                     string gameIdData = await gameIdResponse.Content.ReadAsStringAsync();
 
                     aList = json.Deserialize<AppListRoot>(gameIdData);
-                    
+
+                    if (aList == null)
+                    {
+                        throw new NullReferenceException("Games could not be fetched!\n");
+                    }
                 }
             }
             catch(HttpRequestException e)
             {
                 Console.WriteLine(e.Message);
 
+            }
+            catch(NullReferenceException e)
+            {
+                Console.WriteLine(e.Message);
             }
             allFetchedSteamGames = aList.listGetter.Apps;
         }

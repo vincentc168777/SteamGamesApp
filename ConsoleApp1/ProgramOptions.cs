@@ -34,6 +34,7 @@ namespace ConsoleApp1
 
             foreach (App app in allApps)
             {
+                //wont call getNews if names can be found in game list
                 if (gameNewsinput.ToLower().Equals(app.GameName.ToLower()))
                 {
                     Task getNewsTask = GetGameNews(app.GameId);
@@ -69,11 +70,11 @@ namespace ConsoleApp1
 
         private async Task GetGameNews(int InputAppId)
         {
-            string url = "http://api.steampowered.com/ISteamNews/GetNewsForApp/v2/?appid=" + InputAppId + "&count=6&maxlength=500&format=json";
+            string url = "http://api.steampowered.com/ISteamNews/GetNewsForApp/v2/?appid=" + InputAppId + "&count=6&maxlength=1000&format=json";
 
-            Task<AppNewsGetter> FetchInfoTask = WebConnect.GetWebConnectInstance().getSteamNewsInfoAsync(url);
+            Task<AppNewsRoot> FetchInfoTask = WebConnect.GetWebConnectInstance().getSteamNewsInfoAsync(url);
 
-            AppNewsGetter gameNewsData = await FetchInfoTask;
+            AppNewsRoot gameNewsData = await FetchInfoTask;
 
             foreach (Newsitem n in gameNewsData.Appnews.NewsItems)
             {

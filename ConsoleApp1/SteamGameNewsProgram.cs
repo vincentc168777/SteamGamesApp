@@ -30,7 +30,7 @@ public class SteamGameNewsProgram
 
             string input = Console.ReadLine();
 
-            while (string.IsNullOrEmpty(input))
+            while (string.IsNullOrEmpty(input) || (!input.ToLower().Equals("games") && !input.ToLower().Equals("news")))
             {
                 Console.WriteLine("Please re-type request.\n");
                 Console.WriteLine("Type 'news' or 'games': ");
@@ -72,7 +72,7 @@ public class SteamGameNewsProgram
 
         string yN = Console.ReadLine();
 
-        while (string.IsNullOrEmpty(yN))
+        while (string.IsNullOrEmpty(yN)|| ( !yN.ToLower().Equals("yes") && !yN.ToLower().Equals("no") ) )
         {
             Console.WriteLine("Do you want to search more games? Type yes or no: ");
             yN = Console.ReadLine();

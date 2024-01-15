@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ConsoleApp1
 {
-    internal class AppNewsGetter
+    internal class AppNewsRoot
     {
         [JsonProperty("appnews")]
         public Appnews Appnews { get; set; }
