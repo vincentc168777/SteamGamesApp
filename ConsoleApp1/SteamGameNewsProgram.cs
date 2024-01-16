@@ -23,9 +23,10 @@ public class SteamGameNewsProgram
     {
         bool keepRunning = true;
 
-        Console.WriteLine("Welcome to steam gamme app!");
+        Console.WriteLine("Welcome to steam game app!");
         while (keepRunning)
         {
+            Console.WriteLine();
             Console.WriteLine("Do you want news for a game or just a game list? Type 'news' or 'games': ");
 
             string input = Console.ReadLine();

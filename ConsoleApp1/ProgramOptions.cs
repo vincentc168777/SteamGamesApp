@@ -2,14 +2,21 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace ConsoleApp1
 {
-    internal class ProgramOptions
+    internal class ProgramOptions: Regex
     {
         private static readonly ProgramOptions programOptions = new ProgramOptions();
-        private ProgramOptions() { }
+
+        private Regex regex = new Regex(@"[^0-9a-zA-Z ]+");
+
+        private ProgramOptions()
+        {
+  
+        }
 
         public static ProgramOptions ProgramOptionsInstance()
         {
@@ -19,23 +26,27 @@ namespace ConsoleApp1
         {
             Console.WriteLine("What game do you want news for? Enter full name: ");
 
-            string gameNewsinput = Console.ReadLine();
+            string gameNewsInput = Console.ReadLine();
 
-            while (string.IsNullOrEmpty(gameNewsinput))
+            while (string.IsNullOrEmpty(gameNewsInput))
             {
                 Console.WriteLine("Please re-type.");
                 Console.WriteLine("What game do you want news for? Enter full name: ");
 
-                gameNewsinput = Console.ReadLine();
+                gameNewsInput = Console.ReadLine();
             }
+
+            //remove special characters
+            gameNewsInput = regex.Replace(gameNewsInput, "").ToLower();
 
             Console.WriteLine();
             List<App> allApps = GetAllGames();
 
             foreach (App app in allApps)
             {
+                string appName = regex.Replace(app.GameName, "").ToLower();
                 //wont call getNews if names can be found in game list
-                if (gameNewsinput.ToLower().Equals(app.GameName.ToLower()))
+                if (gameNewsInput.Equals(appName))
                 {
                     Task getNewsTask = GetGameNews(app.GameId);
                     await getNewsTask;
@@ -91,9 +102,14 @@ namespace ConsoleApp1
 
             List<App> allGames = GetAllGames();
 
+            //remove special characters
+            gameName = regex.Replace(gameName, "").ToLower();
+
             foreach (App app in allGames)
             {
-                bool hasName = doesContain(app.GameName, gameName);
+                string appName = regex.Replace(app.GameName, "").ToLower();
+
+                bool hasName = doesContain(appName, gameName);
                 if (hasName)
                 {
                     gamesWithName.Add(app);
